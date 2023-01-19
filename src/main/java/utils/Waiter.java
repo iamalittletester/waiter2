@@ -1,8 +1,6 @@
 package utils;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -14,9 +12,7 @@ public class Waiter {
     private WebDriver driver;
 
     /**
-     * Wait for the page to finish loading
-     * Use the document.readyState property
-     * Page and static resources are loaded when property value is 'complete'
+     * See {@link  utils.Waiter#waitForPageLoadComplete(int)}   label}
      * Wait for up to TIMEOUT seconds
      */
     public void waitForPageLoadComplete() {
@@ -43,9 +39,7 @@ public class Waiter {
     }
 
     /**
-     * Wait for jQuery to finish loading by looking at the 'active' property
-     * Method exits successfully when jQuery finished loading
-     * or if there is no jQuery on the page
+     * See {@link  utils.Waiter#waitForJQuery(int)}   label}
      * Wait for up to TIMEOUT seconds
      */
     public void waitForJQuery() {
@@ -79,10 +73,9 @@ public class Waiter {
     }
 
     /**
-     * Open a URL in the current browser window and wait for page and jQuery to load (if it exists)
+     * See {@link  utils.Waiter#get(String, int)}   label}
      * Wait for up to TIMEOUT seconds for page to load,
      * then for up to TIMEOUT seconds for jQuery to load if it exists
-     * @param url - url to open
      */
     public void get(String url) {
         get(url, TIMEOUT);
@@ -98,5 +91,79 @@ public class Waiter {
         driver.get(url);
         waitForPageLoadComplete(specificTimeout);
         waitForJQuery(specificTimeout);
+    }
+
+    /**
+     * See {@link  utils.Waiter#click(WebElement, int)}   label}
+     * Wait for up to TIMEOUT seconds for click to be successful
+     */
+    public void click(WebElement elementToClick) {
+        click(elementToClick, TIMEOUT);
+    }
+
+    /**
+     * Wait method for successfully clicking an element provided as a WebElement from an @FindBy definition
+     * The click is retried if any exception occurs when attempting to click
+     * (like StaleElementException or NoSuchElementException)
+     * No need to couple with a 'wait for element displayed' method
+     * @param elementToClick - page element to click on
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void click(WebElement elementToClick, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver,
+                Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    elementToClick.click();
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on " + elementToClick + " within "
+                    + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link  utils.Waiter#click(By, int)}   label}
+     * Wait for up to TIMEOUT seconds for click to be successful
+     */
+    public void click(By selectorForElementToClick) {
+        click(selectorForElementToClick, TIMEOUT);
+    }
+
+    /**
+     * Wait method for successfully clicking an element whose selector is provided as a By selector
+     * Inside the wait method is where the corresponding WebElement will be extracted based
+     * on the By selector
+     * The click is retried if any exception occurs when attempting to click
+     * (like StaleElementException or NoSuchElementException)
+     * No need to couple with a 'wait for element displayed' method
+     * @param selectorForElementToClick - selector for identifying the page element
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void click(By selectorForElementToClick, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver,
+                Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    driver.findElement(selectorForElementToClick).click();
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on " + selectorForElementToClick + " within "
+                    + specificTimeout + " seconds.");
+        }
     }
 }
