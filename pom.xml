@@ -7,6 +7,32 @@
     <groupId>com.imalittletester</groupId>
     <artifactId>waiter2</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>A library focused on providing Selenium wait based methods for use in automated tests</description>
+    <url>https://github.com/iamalittletester/waiter2</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Corina Pip</name>
+            <email>imalittletester6@gmail.com</email>
+            <organizationUrl>https://imalittletester.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/iamalittletester/waiter2.git</connection>
+        <developerConnection>scm:git:ssh://github.com:iamalittletester/waiter2.git</developerConnection>
+        <url>http://github.com/iamalittletester/waiter2/tree/main</url>
+    </scm>
+
     <build>
         <plugins>
             <plugin>
