@@ -7,9 +7,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
 public class Waiter {
+    public static final int LONG_TIMEOUT = 120;
+    public static final int MEDIUM_TIMEOUT = 60;
     public static final int TIMEOUT = 30;
+    public static final int TINY_TIMEOUT = 10;
 
     private WebDriver driver;
+
+    public Waiter(WebDriver driver) {
+        this.driver = driver;
+    }
 
     /**
      * See {@link  utils.Waiter#waitForPageLoadComplete(int)}   label}
@@ -124,7 +131,7 @@ public class Waiter {
             wait.until(condition);
         }
         catch (TimeoutException e) {
-            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on " + elementToClick + " within "
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on '" + elementToClick + "' within "
                     + specificTimeout + " seconds.");
         }
     }
@@ -162,8 +169,624 @@ public class Waiter {
             wait.until(condition);
         }
         catch (TimeoutException e) {
-            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on " + selectorForElementToClick + " within "
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully click on '" + selectorForElementToClick + "' within "
                     + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitAttributeValueEqualsText(WebElement, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsText(WebElement inputToTypeInto, String text) {
+        clearSendKeysAndTab_WaitAttributeValueEqualsText(inputToTypeInto, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is still the typed one.
+     * For that, the method will wait for the attribute "value"'s value to equal the typed text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsText(WebElement inputToTypeInto, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getAttribute("value").equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitAttributeValueEqualsText(WebElement, String, int)}
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsText(WebElement inputToTypeInto, String text) {
+        clearAndSendKeys_WaitAttributeValueEqualsText(inputToTypeInto, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is still the typed one.
+     * For that, the method will wait for attribute "value"'s value to equal the typed text.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsText(WebElement inputToTypeInto, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getAttribute("value").equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitAttributeValueEqualsText(By, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsText(By inputToTypeIntoBy, String text) {
+        clearSendKeysAndTab_WaitAttributeValueEqualsText(inputToTypeIntoBy, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is still the typed one.
+     * For that, the method will wait for attribute "value"'s value to equal the typed text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsText(By inputToTypeIntoBy, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getAttribute("value").equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitAttributeValueEqualsText(By, String, int)}
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsText(By inputToTypeIntoBy, String text) {
+        clearAndSendKeys_WaitAttributeValueEqualsText(inputToTypeIntoBy, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is still the typed one.
+     * For that, the method will wait for attribute "value"'s value to equal the typed text.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsText(By inputToTypeIntoBy, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getAttribute("value").equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(WebElement, String, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(WebElement inputToTypeInto, String text,
+                                                                        String expectedText) {
+        clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(inputToTypeInto, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is another expected one.
+     * For that, the method will wait for attribute "value"'s value to equal the expected text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param expectedText - what the text in the field should be after typing
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(WebElement inputToTypeInto,
+                                                                        String text, String expectedText,
+                                                                        int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getAttribute("value").equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitAttributeValueEqualsAnotherText(WebElement, String, String, int)}
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsAnotherText(WebElement inputToTypeInto,
+                                                                     String text, String expectedText) {
+        clearAndSendKeys_WaitAttributeValueEqualsAnotherText(inputToTypeInto, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is another expected one.
+     * For that, the method will wait for the attribute "value"'s value to equal the expected text.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param expectedText - what the text in the field should be after typing
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsAnotherText(WebElement inputToTypeInto, String text,
+                                                                     String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getAttribute("value").equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(By, String, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(By inputToTypeIntoBy,
+                                                                        String text, String expectedText) {
+        clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(inputToTypeIntoBy, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is another expected one.
+     * For that, the method will wait for the attribute "value"'s value to equal an expected text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param expectedText - the text that needs to be displayed in the field after typing
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearSendKeysAndTab_WaitAttributeValueEqualsAnotherText(By inputToTypeIntoBy, String text,
+                                                                        String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getAttribute("value").equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitAttributeValueEqualsAnotherText(By, String, String, int)}
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsAnotherText(By inputToTypeIntoBy, String text, String expectedText) {
+        clearAndSendKeys_WaitAttributeValueEqualsAnotherText(inputToTypeIntoBy, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is another, expected text.
+     * For that, the method will wait for the attribute "value"'s value to equal the expected text.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param expectedText - the text that will be displayed in the field after typing
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearAndSendKeys_WaitAttributeValueEqualsAnotherText(By inputToTypeIntoBy, String text,
+                                                                     String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getAttribute("value").equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitGetTextEqualsText(WebElement, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsText(WebElement inputToTypeInto, String text) {
+        clearSendKeysAndTab_WaitGetTextEqualsText(inputToTypeInto, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is still the typed one.
+     * For that, the method will wait for the element text to equal the typed text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsText(WebElement inputToTypeInto, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getText().equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitGetTextEqualsText(WebElement, String, int)}
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsText(WebElement inputToTypeInto, String text) {
+        clearAndSendKeys_WaitGetTextEqualsText(inputToTypeInto, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is still the typed one.
+     * For that, the method will wait for the element text to equal the typed text.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsText(WebElement inputToTypeInto, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getText().equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitGetTextEqualsText(By, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsText(By inputToTypeIntoBy, String text) {
+        clearSendKeysAndTab_WaitGetTextEqualsText(inputToTypeIntoBy, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is still the typed one.
+     * For that, the method will wait for element text to equal the typed text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsText(By inputToTypeIntoBy, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getText().equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitGetTextEqualsText(By, String, int)}
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsText(By inputToTypeIntoBy, String text) {
+        clearAndSendKeys_WaitAttributeValueEqualsText(inputToTypeIntoBy, text, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is still the typed one.
+     * For that, the method will wait for the element text to equal the typed text.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsText(By inputToTypeIntoBy, String text, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getText().equals(text);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitGetTextEqualsAnotherText(WebElement, String, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsAnotherText(WebElement inputToTypeInto, String text,
+                                                                        String expectedText) {
+        clearSendKeysAndTab_WaitGetTextEqualsAnotherText(inputToTypeInto, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is another expected one.
+     * For that, the method will wait for the element inner text to equal the expected text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param expectedText - what the text in the field should be after typing
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsAnotherText(WebElement inputToTypeInto,
+                                                                        String text, String expectedText,
+                                                                        int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getText().equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitGetTextEqualsAnotherText(WebElement, String, String, int)}
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsAnotherText(WebElement inputToTypeInto,
+                                                                     String text, String expectedText) {
+        clearAndSendKeys_WaitGetTextEqualsAnotherText(inputToTypeInto, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is another expected one.
+     * For that, the method will wait for the element inner text to equal the expected text.
+     * @param inputToTypeInto - input to type into
+     * @param text - what to type into the input
+     * @param expectedText - what the text in the field should be after typing
+     * @param specificTimeout - wait for up to this many seconds for the condition to be successful
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsAnotherText(WebElement inputToTypeInto, String text,
+                                                                     String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getText().equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeInto + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearSendKeysAndTab_WaitGetTextEqualsAnotherText(By, String, String, int)}
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsAnotherText(By inputToTypeIntoBy,
+                                                                        String text, String expectedText) {
+        clearSendKeysAndTab_WaitGetTextEqualsAnotherText(inputToTypeIntoBy, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), type into the input the desired text, then hit TAB.
+     * The method exits successfully when, after hitting TAB, the text is another expected one.
+     * For that, the method will wait for the element inner text to equal an expected text.
+     * The TAB is useful when the input is actioned by JS, which might change the value typed
+     * once the cursor moves into a different field.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param expectedText - the text that needs to be displayed in the field after typing
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearSendKeysAndTab_WaitGetTextEqualsAnotherText(By inputToTypeIntoBy, String text,
+                                                                        String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    inputToTypeInto.sendKeys(Keys.TAB);
+                    return inputToTypeInto.getText().equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
+        }
+    }
+
+    /**
+     * See {@link Waiter#clearAndSendKeys_WaitGetTextEqualsAnotherText(By, String, String, int)}
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsAnotherText(By inputToTypeIntoBy, String text, String expectedText) {
+        clearAndSendKeys_WaitGetTextEqualsAnotherText(inputToTypeIntoBy, text, expectedText, TIMEOUT);
+    }
+
+    /**
+     * Clear input first (so as not to concatenate to existing text), then type into the input the desired text.
+     * The method exits successfully when, after typing, the text is another, expected text.
+     * For that, the method will wait for the element inner text to equal the expected text.
+     * @param inputToTypeIntoBy - By for input to type into
+     * @param text - what to type into the input
+     * @param expectedText - the text that will be displayed in the field after typing
+     * @param specificTimeout - wait for up to this many seconds for the click to be successful
+     */
+    public void clearAndSendKeys_WaitGetTextEqualsAnotherText(By inputToTypeIntoBy, String text,
+                                                                     String expectedText, int specificTimeout) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(specificTimeout));
+        try {
+            ExpectedCondition<Boolean> condition = arg -> {
+                try {
+                    WebElement inputToTypeInto = driver.findElement(inputToTypeIntoBy);
+                    inputToTypeInto.clear();
+                    inputToTypeInto.sendKeys(text);
+                    return inputToTypeInto.getText().equals(expectedText);
+                } catch (Exception e) {
+                    return false;
+                }
+            };
+            wait.until(condition);
+        }
+        catch (TimeoutException e) {
+            throw new RuntimeException("waiter2.FAILURE: Could not successfully type the text '" + text +
+                    "' into input '" + inputToTypeIntoBy + "' within " + specificTimeout + " seconds.");
         }
     }
 }
